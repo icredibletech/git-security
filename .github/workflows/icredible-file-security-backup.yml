@@ -1,0 +1,102 @@
+name: iCredible File Security Repository Backup
+
+on:
+  push:
+    # branches:
+    #   - main
+
+jobs:
+  backup:
+    name: Repository Backup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clone repository (mirror mode)
+        run: git clone --mirror . repo-backup
+
+      - name: Install ZSTD
+        run: |
+          echo "Installing Zstandard (ZSTD)..."
+          sudo apt-get install -y zstd
+
+      - name: Compress Repository
+        run: |
+          echo "Compressing repository using ZSTD..."
+          tar -cf repo.tar repo-backup
+          zstd -9 repo.tar -o repo.tar.zst
+          echo "Compression completed: repo.tar.zst"
+
+      - name: Get Activation Token
+        id: get_token
+        run: |
+          echo "Requesting activation token..."
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "https://dev.api.file-security.icredible.com/endpoint/activation" -H "Content-Type: application/json" -d '{
+            "activationCode": "${{ secrets.ICREDIBLE_ACTIVATION_CODE }}",
+            "uniqueId": "${{ github.repository_id }}",
+            "ip": "${{ runner.ip }}",
+            "operatingSystem": "Linux",
+            "endpointType": "Workstation",
+            "endpointName": "Github Endpoint (${{ github.repository }})"
+          }')
+          echo "Raw API Response: $RESPONSE"
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+          JSON_BODY=$(echo "$RESPONSE" | head -n -1)
+
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "Failed to obtain activation token. Response: $RESPONSE"
+            echo "Error: Received HTTP status $HTTP_STATUS"
+            echo "Response: $JSON_BODY"
+            exit 1
+          fi
+
+          TOKEN=$(echo "$JSON_BODY" | jq -r '.data.token')
+          echo "TOKEN=$TOKEN" >> $GITHUB_ENV
+
+      - name: Upload Compressed Backup
+        run: |
+          echo "Uploading compressed backup to API..."
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "https://dev.api.file-security.icredible.com/shield" \
+          -H "Authorization: Bearer $TOKEN" \
+          -F "file=@repo.tar.zst" \
+          -F "fileGuid=$FILE_GUID" \
+          -F "fileDescription=Repository backup of ${{ github.repository }}" \
+          -F "filePath=/github/${{ github.repository }}/repo.tar.zst" \
+          -F "fileSize=$(stat -c%s repo.tar.zst)" \
+          -F "attributes=32" \
+          -F "compressionEngine=None" \
+          -F "compressionLevel=NoCompression" \
+          -F "encryptionType=None")
+          echo "Raw API Response: $RESPONSE"
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+          JSON_BODY=$(echo "$RESPONSE" | head -n -1)
+
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "Failed to upload backup. Response: $RESPONSE"
+            echo "Response: $JSON_BODY"
+            exit 1
+          fi
+          echo "FILE_ID=$(echo $JSON_BODY | jq -r .data.id)" >> $GITHUB_ENV
+          echo "FILE_GUID=$(echo $JSON_BODY | jq -r .data.fileGuid)" >> $GITHUB_ENV
+          echo "Backup successfully uploaded."
+
+      # - name: Download Artifact
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: ic-context
+      #     path: ic-context
+
+      - name: Prepare Artifact To Upload
+        run: |
+          echo "TOKEN=$TOKEN" >> ic-context
+          echo "FILE_ID=$FILE_ID" >> ic-context
+          echo "FILE_GUID=$FILE_GUID" >> ic-context
+
+      # TODO FIX: Artifact file is not clearing its state
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ic-context
+          path: ic-context
