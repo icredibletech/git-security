@@ -27,8 +27,8 @@ jobs:
         run: |
           echo "Compressing repository using ZSTD..."
           tar -cf repo.tar repo-backup
-          zstd -9 repo.tar -o repo.tar.zst
-          echo "Compression completed: repo.tar.zst"
+          zstd -9 repo.tar -o ${{ github.repository }}.tar.zst
+          echo "Compression completed: ${{ github.repository }}.tar.zst"
 
       - name: Get Activation Token
         id: get_token
