@@ -164,16 +164,14 @@ jobs:
           cd repo-backup
           git config user.name "iCredible File Security"
           git config user.email "file-security@icredible.com"
-          git config url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf https://github.com/
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git config url."https://x-access-token:${ inputs.github_token }@github.com/".insteadOf https://github.com/
+
 
       - name: Push Restored Repository (If OTP Provided)
         if: env.REQUEST_OTP == 'false'
         run: |
           cd repo-backup
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git remote set-url origin https://x-access-token:${{ inputs.github_token }}@github.com/${{ github.repository }}.git
           git push --mirror
           echo "Restored backup pushed to repository."
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
