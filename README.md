@@ -1,57 +1,140 @@
-# iCredible File Security Repository Backup & Restore
+# All-in-One-Repo-Repair-Kit
 
 ## Overview
-This repository provides an automated backup and restore workflow for GitHub repositories using GitHub Actions. It securely stores repository backups via an API and enables controlled restoration through OTP verification.
 
-## Features
-- **Automated Backup:** Runs on each commit push, compressing and encrypting the repository before uploading.
-- **Secure Storage:** Uses AES-256 encryption and API-based secure storage.
-- **OTP-Based Restore:** Ensures only authorized users can restore backups.
-- **Flexible OTP Handling:** Users can request an OTP and then use it in a second attempt to retrieve the backup.
-- **Efficient Compression:** Uses ZSTD for optimal storage efficiency.
+This GitHub Action provides a comprehensive solution for securely backing up and restoring your repositories using military-grade encryption and compression.
 
-## Backup Workflow
-The backup workflow is triggered on each `push` event and follows these steps:
-1. **Checkout Repository** – Clones the repository in mirror mode.
-2. **Install ZSTD** – Ensures ZSTD compression is available.
-3. **Compress Repository** – Archives and compresses the repository using ZSTD.
-4. **Request Activation Token** – Fetches an authentication token from the API.
-5. **Upload Backup** – Sends the compressed repository to the API securely.
-6. **Store Context Information** – Saves relevant details (TOKEN, FILE_ID, FILE_GUID) for future restores.
+### Features
+- 🔒 AES-256-CBC encryption with PBKDF2 key derivation
+- ⚡ Zstandard (ZSTD) compression at level 9
+- 🔐 OTP-based authentication for restore operations
+- 📦 Complete repository mirroring with workflow management
+- 🔄 Seamless integration with GitHub Actions
 
-## Restore Workflow
-The restore workflow is manually triggered via `workflow_dispatch` and follows these steps:
-1. **Download Backup Context** – Retrieves saved details from the previous backup.
-2. **Check OTP Input** – If an OTP is provided, it proceeds with restoration; otherwise, an OTP request is initiated.
-3. **Request Activation Token** – Fetches a new authentication token.
-4. **OTP Handling (If Needed)** – If no OTP is provided, one is requested and sent via email.
-5. **Retrieve Backup (If OTP Provided)** – Downloads the encrypted backup from the API.
-6. **Extract and Restore Backup** – Decompresses and extracts the repository files.
-7. **Push to Repository** – Restores the repository content by pushing the extracted data.
+---
 
-## Usage
-### Backup Workflow
-This workflow is triggered automatically on every commit push.
+## ⚙️ Core Technologies
 
-### Restore Workflow
-To restore a backup:
-1. Manually trigger the restore workflow (`workflow_dispatch`).
-2. Leave the OTP field empty on the first attempt to receive an OTP via email.
-3. Re-run the workflow, this time entering the received OTP.
-4. The repository will be restored and pushed to the designated branch.
+### Encryption & Compression
+- **OpenSSL:** Industry-standard encryption using AES-256-CBC cipher with PBKDF2 key derivation.
+- **Zstandard:** Real-time compression algorithm providing high compression ratios at level 9.
+- **Minimum 32-character keys:** Enforced password strength requirements.
 
-## Requirements
-- **GitHub Secrets:**
-  - `ICREDIBLE_ACTIVATION_CODE` – Required for authentication.
-  - `GITHUB_TOKEN` – Required for pushing restored data. (Provided by GitHub Actions)
-- **API Endpoints:**
-  - `/endpoint/activation` – For authentication.
-  - `/shield` – For backup uploads.
-  - `/OTP/Send` – For OTP generation.
-  - `/restore/{file_guid}` – For restoring backups.
+### Security Features
+- **OTP Verification:** Dual authentication method (email or authenticator app).
+- **Secrets Management:** Secure handling of sensitive data through GitHub Secrets.
+- **Encrypted Backups:** All backups are encrypted before transmission and storage.
 
-## Notes
-- The backup workflow is fully automated, while restore requires OTP verification.
-- Logs and detailed outputs help track the workflow progress.
-- Ensure required secrets and API configurations are set up before use.
+---
+
+# 📦 Setup Guide
+
+1. **Store your Activation Code** as a GitHub Secret  
+   - Go to **Settings > Secrets > Actions** in your repository  
+   - Create a new secret named `ACTIVATION_CODE`  
+   - Paste in the activation code provided by your API service
+
+2. **Store your Encryption PASSWORD** as a GitHub Secret  
+   - Create a new secret named `ENCRYPTION_PASSWORD`  
+   - Use a strong key of **at least 32 characters**
+
+
+## 🔄 Backup Workflow
+
+Add your workflow file 
+   Create a file at `.github/workflows/backup.yml` and paste in the block below:
+
+```yaml
+name: "Yedekleme Islemi"
+
+on:
+  push:
+    
+jobs:
+  check-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+         uses: actions/checkout@v4
+         with:
+            fetch-depth: 0
+    
+      - name: "Yedekleme [${{ github.event_name }}] #${{ github.run_number }}: ${{ github.sha }} by ${{ github.actor }}"
+        uses: berkayy-atas/All-in-One-Repo-Repair-Kit@latest
+        with:
+          activation_code: ${{ secrets.ACTIVATION_CODE }}
+          encryption_password: ${{ secrets.ENCRYPTION_PASSWORD }}
+```
+---
+
+
+## 🔄 Restore Workflow
+
+> **⚠️ Note**
+> This is designed for empty repositories—it will overwrite all history.
+
+Create a file at `.github/workflows/restore.yml` and paste in the block below:
+
+```yaml
+name: Restore Repository
+permissions: write-all
+
+on:
+  workflow_dispatch:
+    inputs:
+      file_version_id:
+        description: 'The version id of the file you want to restore. You can enter it in the first or second run while using the workflow. The version id you last entered is always kept and restored when the OTP code arrives.'
+        required: true
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+         uses: actions/checkout@v4
+         with:
+            fetch-depth: 0
+
+      - name: "Restore Repository [${{ github.event_name }}] #${{ github.run_number }}: ${{ github.sha }} by ${{ github.actor }}"
+        uses: berkayy-atas/All-in-One-Repo-Repair-Kit@latest
+        with:
+          activation_code: ${{ secrets.ACTIVATION_CODE }}
+          encryption_password: ${{ secrets.ENCRYPTION_PASSWORD }}
+          file_version_id: ${{ github.event.inputs.FILE_VERSION_ID }}
+```
+# 🔑 Personal Access Token (PAT) Setup Guide for Repository Restoration
+
+## Step 1: Create a Personal Access Token
+1. Log in to your GitHub account
+2. Click on your profile picture in the top-right corner
+3. Navigate to: Settings → Developer Settings → Personal Access Tokens → Tokens (classic)
+4. Click `Generate new token` then `Generate new token (classic)`
+
+## Step 2: Configure Token Permissions
+Set these required permissions:
+```yml
+Note: "Repository-Restore-Token"  # Example name
+Expiration: 30 days             # Recommended duration
+Permissions:
+- repo       # Select ALL repository permissions
+- workflow   # Required for workflow restoration
+```
+
+## Step 3: Add Token to Repository Secrets
+1. In your repository, go to: Settings → Secrets → Actions
+2. Click New repository secret`
+3. Enter details:
+
+```bash
+Name: RESTORE_PAT_TOKEN  # This will be used in workflow
+Secret: [Paste your generated token here]
+```
+## Step 4: Configure Workflow File
+
+Add this to your restoration workflow (.github/workflows/restore.yml):
+
+```yaml
+restore_github_token: ${{ secrets.RESTORE_PAT_TOKEN }} 
+```
+
 

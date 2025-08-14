@@ -1,0 +1,134 @@
+name: 'MyApp File Security'
+author: 'MyApp Inc.'
+description: 'Secure repository backup and restoration with military-grade encryption'
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  activation_code:
+    description: 'API activation code'
+    required: true
+  encryption_password:
+    description: 'Encryption key (min 32 characters)'
+    required: true
+  file_version_id:
+    description: 'Required for restore operations'
+    required: false
+    default: ''
+  restore_github_token:
+    description: 'Optional token for workflow restoration'
+    required: false
+    default: ''
+  otp_request_type:
+    description: 'OTP delivery method (MAIL or AUTHENTICATOR)'
+    required: false
+    default: 'MAIL'
+
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Set execute permissions
+      shell: bash
+      run: chmod -R +x ${{ github.action_path }}/scripts
+
+    - name: Validate input
+      shell: bash
+      run: ${{ github.action_path }}/scripts/common/validate_inputs.sh
+      env:
+        OTP_REQUEST_TYPE: ${{ inputs.otp_request_type }}
+
+    - name: Set global variables
+      shell: bash
+      run: ${{ github.action_path }}/scripts/common/set_globals.sh
+
+    - name: Validate encryption password
+      shell: bash
+      run: ${{ github.action_path }}/scripts/common/validate_password.sh
+      env:
+        ENCRYPTION_PASSWORD: ${{ inputs.encryption_password }}
+
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        ref: ${{ github.ref }}
+
+    - name: Create mirror clone
+      if: ${{ inputs.file_version_id == '' }}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/shield/mirror_clone.sh
+      
+    - name: Install dependencies
+      if: ${{ inputs.file_version_id == '' }}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/shield/install_deps.sh
+
+    - name: Compress repository
+      if: ${{ inputs.file_version_id == '' }}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/shield/compress_repo.sh
+      
+    - name: Encrypt repository
+      if: ${{ inputs.file_version_id == '' }}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/shield/encrypt_repo.sh
+      env:
+        ENCRYPTION_PASSWORD: ${{ inputs.encryption_password }}
+        
+    - name: Get activation token
+      shell: bash
+      run: ${{ github.action_path }}/scripts/common/get_token.sh
+      env:
+        ACTIVATION_CODE: ${{ inputs.activation_code }}
+
+    - name: Upload backup
+      if: ${{ inputs.file_version_id == '' }}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/shield/upload_backup.sh
+
+    - name: Print summary
+      if: ${{ inputs.file_version_id == '' }}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/shield/print_summary.sh
+
+    - name: Request OTP
+      if: ${{ inputs.file_version_id != '' }}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/restore/request_otp.sh
+      env:
+        OTP_TYPE: ${{ inputs.otp_request_type }}
+
+    - name: Verify OTP
+      if: ${{ inputs.file_version_id != '' }}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/restore/verify_otp.sh
+
+    - name: Retrieve backup
+      if: ${{ inputs.file_version_id != '' }}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/restore/retrieve_backup.sh
+      env:
+        FILE_VERSION_ID: ${{ inputs.file_version_id }}
+
+    - name: Decrypt backup
+      if: ${{ inputs.file_version_id != '' }}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/restore/decrypt_backup.sh
+      env:
+        ENCRYPTION_PASSWORD: ${{ inputs.encryption_password }}
+        
+    - name: Extract backup
+      if: ${{ inputs.file_version_id != '' }}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/restore/extract_backup.sh
+
+    - name: Configure Git and Push
+      if: ${{ inputs.file_version_id != '' }}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/restore/configure_push.sh
+      env:
+        RESTORE_TOKEN: ${{ inputs.restore_github_token }}
+        GITHUB_DEFAULT_TOKEN: ${{ github.token }}
+    
