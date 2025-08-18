@@ -51,19 +51,19 @@ on:
   push:
     
 jobs:
-  secure_and_archive_repo:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
+   secure_and_archive_repo:
+     runs-on: ubuntu-latest
+     steps:
+       - name: Checkout repository
          uses: actions/checkout@v4
          with:
             fetch-depth: 0
     
-      - name: "The iCredible shield operation was triggered by ${{ github.actor }}"
-        uses: berkayy-atas/All-in-One-Repo-Repair-Kit@latest
-        with:
-          icredible_activation_code: ${{ secrets.ICREDIBLE_ACTIVATION_CODE }}
-          icredible_encryption_password: ${{ secrets.ENCRYPTION_PASSWORD }}
+       - name: "The iCredible shield operation was triggered by ${{ github.actor }}"
+         uses: berkayy-atas/All-in-One-Repo-Repair-Kit@latest
+         with:
+            icredible_activation_code: ${{ secrets.ICREDIBLE_ACTIVATION_CODE }}
+            encryption_password: ${{ secrets.ENCRYPTION_PASSWORD }}
 ```
 ---
 
@@ -87,20 +87,20 @@ on:
         required: true
 
 jobs:
-  restore_from_archive:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
+   restore_from_archive:
+     runs-on: ubuntu-latest
+     steps:
+       - name: Checkout repository
          uses: actions/checkout@v4
          with:
             fetch-depth: 0
 
-      - name: "The iCredible restore operation was triggered by ${{ github.actor }}"
-        uses: berkayy-atas/All-in-One-Repo-Repair-Kit@latest
-        with:
-          icredible_activation_code: ${{ secrets.ICREDIBLE_ACTIVATION_CODE }}
-          icredible_encryption_password: ${{ secrets.ENCRYPTION_PASSWORD }}
-          file_version_id: ${{ github.event.inputs.FILE_VERSION_ID }}
+       - name: "The iCredible restore operation was triggered by ${{ github.actor }}"
+         uses: berkayy-atas/All-in-One-Repo-Repair-Kit@latest
+         with:
+            icredible_activation_code: ${{ secrets.ICREDIBLE_ACTIVATION_CODE }}
+            encryption_password: ${{ secrets.ENCRYPTION_PASSWORD }}
+            file_version_id: ${{ github.event.inputs.FILE_VERSION_ID }}
 ```
 # 🔑 Personal Access Token (PAT) Setup Guide for Repository Restoration
 
