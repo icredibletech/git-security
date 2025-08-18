@@ -33,7 +33,7 @@ $UPLOAD_METADATA
 --------------------------------------------------
 **API Response**
 - File version id: $recordId
-- You can access the shielded file from this link : $MGMT_BASE_URL/$endpointId/$directoryRecordId
+- You can access the shielded file from this link : $MGMT_BASE_URL/dashboard/file-management/$endpointId/$directoryRecordId
 EOF
 )
 
