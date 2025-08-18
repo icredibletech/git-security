@@ -5,7 +5,7 @@ RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$API_BASE_URL/OTP/Send" \
   -d '{
     "Source": "FileDownload",
     "OtpGenerationMode": "Number",
-    "Type": "'"$OTP_TYPE"'"
+    "Type": "'"$OTP_DELIVERY_METHOD"'"
   }')
 
 HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)

@@ -2,7 +2,7 @@
 RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$API_BASE_URL/endpoint/activation" \
   -H "Content-Type: application/json" \
   -d '{
-    "activationCode": "'"$ACTIVATION_CODE"'",
+    "activationCode": "'"$ICREDIBLE_ACTIVATION_CODE"'",
     "uniqueId": "'"$GITHUB_REPOSITORY_ID"'",
     "ip": "'"$RUNNER_IP"'",
     "operatingSystem": "Linux",

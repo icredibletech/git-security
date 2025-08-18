@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$OTP_REQUEST_TYPE" != "MAIL" && "$OTP_REQUEST_TYPE" != "AUTHENTICATOR" ]]; then
+if [[ "$OTP_DELIVERY_METHOD" != "MAIL" && "$OTP_DELIVERY_METHOD" != "AUTHENTICATOR" ]]; then
   echo "::error ::Invalid otp_request_type. Must be 'MAIL' or 'AUTHENTICATOR'"
   exit 1
 fi
