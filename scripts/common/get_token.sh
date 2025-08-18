@@ -1,11 +1,28 @@
 #!/bin/bash
+
+case "$RUNNER_OS" in
+  "Linux")
+    API_OS_NAME="Linux"
+    ;;
+  "Windows")
+    API_OS_NAME="Windows"
+    ;;
+  "macOS")
+    API_OS_NAME="MacOS"
+    ;;
+  *)
+    API_OS_NAME="Linux"
+    echo "::warning ::Unexpected runner OS '$RUNNER_OS'. Defaulting to 'Linux'."
+    ;;
+esac
+
 RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$API_BASE_URL/endpoint/activation" \
   -H "Content-Type: application/json" \
   -d '{
     "activationCode": "'"$ICREDIBLE_ACTIVATION_CODE"'",
     "uniqueId": "'"$GITHUB_REPOSITORY_ID"'",
     "ip": "'"$RUNNER_IP"'",
-    "operatingSystem": "Linux",
+    "operatingSystem": "'"$API_OS_NAME"'",
     "endpointType": "Workstation",
     "endpointName": "Github Endpoint ('"$GITHUB_REPOSITORY"')"
   }')

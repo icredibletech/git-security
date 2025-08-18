@@ -82,6 +82,7 @@ runs:
       run: ${{ github.action_path }}/scripts/common/get_token.sh
       env:
         ICREDIBLE_ACTIVATION_CODE: ${{ inputs.icredible_activation_code }}
+        RUNNER_OS: ${{ runner.os }}
 
     - name: Transfer Backup Archive
       if: ${{ inputs.file_version_id == '' }}
