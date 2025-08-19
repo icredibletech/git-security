@@ -58,22 +58,22 @@ runs:
     - name: Create mirror clone
       if: ${{ inputs.file_version_id == '' }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/shield/mirror_clone.sh
+      run: ${{ github.action_path }}/scripts/backup/mirror_clone.sh
       
     - name: Install dependencies
       if: ${{ inputs.file_version_id == '' }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/shield/install_deps.sh
+      run: ${{ github.action_path }}/scripts/backup/install_deps.sh
 
     - name: Compress repository
       if: ${{ inputs.file_version_id == '' }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/shield/compress_repo.sh
+      run: ${{ github.action_path }}/scripts/backup/compress_repo.sh
       
     - name: Encrypt repository
       if: ${{ inputs.file_version_id == '' }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/shield/encrypt_repo.sh
+      run: ${{ github.action_path }}/scripts/backup/encrypt_repo.sh
       env:
         ENCRYPTION_PASSWORD: ${{ inputs.encryption_password }}
         
@@ -86,12 +86,12 @@ runs:
     - name: Upload backup
       if: ${{ inputs.file_version_id == '' }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/shield/upload_backup.sh
+      run: ${{ github.action_path }}/scripts/backup/upload_backup.sh
 
     - name: Print summary
       if: ${{ inputs.file_version_id == '' }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/shield/print_summary.sh
+      run: ${{ github.action_path }}/scripts/backup/print_summary.sh
 
     - name: Request OTP
       if: ${{ inputs.file_version_id != '' }}
