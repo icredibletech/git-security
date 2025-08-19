@@ -31,13 +31,13 @@ RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
     -F "file=@$ENC_FILE_NAME" \
     -F "Size=$UNCOMPRESSED_SIZE" \
     -F "CompressedFileSize=$COMPRESSED_SIZE" \
-    -F "Attributes=32" \
+    -F "Attributes=$UPLOAD_ATTRIBUTES" \
     -F "FileName=${GITHUB_REPOSITORY}" \
-    -F "CompressionEngine=None" \
-    -F "CompressionLevel=NoCompression" \
-    -F "FullPath=/${GITHUB_REPOSITORY}/repo.tar.zst" \
-    -F "encryptionType=None" \
-    -F "RevisionType=1" \
+    -F "CompressionEngine=$UPLOAD_COMPRESSION_ENGINE" \
+    -F "CompressionLevel=$UPLOAD_COMPRESSION_LEVEL" \
+    -F "FullPath=/${GITHUB_REPOSITORY}/$ENC_FILE_NAME" \
+    -F "encryptionType=$UPLOAD_ENCRYPTION_TYPE" \
+    -F "RevisionType=$UPLOAD_REVISION_TYPE" \
     "${curl_args[@]}"
 )
 

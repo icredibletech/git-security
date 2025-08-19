@@ -3,8 +3,8 @@ RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$API_BASE_URL/OTP/Send" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TOKEN" \
   -d '{
-    "Source": "FileDownload",
-    "OtpGenerationMode": "Number",
+    "Source": "'"$OTP_SOURCE_TYPE"'",
+    "OtpGenerationMode": "'"$OTP_GEN_MODE"'",
     "Type": "'"$OTP_TYPE"'"
   }')
 

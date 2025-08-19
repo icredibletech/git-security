@@ -1,4 +1,4 @@
 #!/bin/bash
-tar -cf repo.tar repo-mirror
-zstd -$ZSTD_COMPRESSION_LEVEL repo.tar -o repo.tar.zst
-echo "UNCOMPRESSED_SIZE=$(stat --printf='%s' repo.tar)" >> $GITHUB_ENV
+tar -cf $TAR_ARCHIVE_FILE $SOURCE_ARCHIVE_DIR
+zstd -$ZSTD_COMPRESSION_LEVEL $TAR_ARCHIVE_FILE -o $COMPRESSED_ARCHIVE_FILE
+echo "UNCOMPRESSED_SIZE=$(stat --printf='%s' $TAR_ARCHIVE_FILE)" >> $GITHUB_ENV

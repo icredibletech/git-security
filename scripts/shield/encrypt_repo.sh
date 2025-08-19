@@ -1,6 +1,6 @@
 #!/bin/bash
 REPO_NAME=$(basename "$GITHUB_REPOSITORY")
 ENC_FILE_NAME="$REPO_NAME.tar.zst.enc"
-openssl enc -aes-256-cbc -salt -pbkdf2 -in repo.tar.zst -out "$ENC_FILE_NAME" -pass pass:"$ENCRYPTION_PASSWORD"
+openssl enc -$ENCRYPTION_ALGORITHM -in $COMPRESSED_ARCHIVE_FILE -out "$ENC_FILE_NAME" -pass pass:"$ENCRYPTION_PASSWORD"
 echo "ENC_FILE_NAME=$ENC_FILE_NAME" >> $GITHUB_ENV
 echo "COMPRESSED_SIZE=$(stat --printf='%s' "$ENC_FILE_NAME")" >> $GITHUB_ENV

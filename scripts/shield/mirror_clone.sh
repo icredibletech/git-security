@@ -1,2 +1,2 @@
 #!/bin/bash
-git clone --mirror . repo-mirror
+git clone --mirror . $SOURCE_ARCHIVE_DIR

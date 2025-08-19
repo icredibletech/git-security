@@ -1,5 +1,5 @@
 #!/bin/bash
-cd repo-mirror
+cd $SOURCE_ARCHIVE_DIR
 ls -la
 if [ -z "$RESTORE_TOKEN" ]; then
   sudo apt-get install -y git-filter-repo
@@ -10,8 +10,8 @@ else
   TOKEN_TO_USE="$RESTORE_TOKEN"
 fi
 
-git config user.name "myapp File Security"
-git config user.email "file-security@myapp.com"
+git config user.name "$GIT_USER_NAME"
+git config user.email "$GIT_USER_EMAIL"
 git push --mirror --force "https://x-access-token:$TOKEN_TO_USE@github.com/$GITHUB_REPOSITORY.git"
 
 echo "::notice title=Success!::Repository restored successfully"
