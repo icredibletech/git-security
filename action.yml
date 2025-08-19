@@ -33,6 +33,12 @@ runs:
   using: 'composite'
   steps:
 
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        ref: ${{ github.ref }}
+
     - name: Set execute permissions
       shell: bash
       run: chmod -R +x ${{ github.action_path }}/scripts
@@ -49,11 +55,6 @@ runs:
       shell: bash
       run: ${{ github.action_path }}/scripts/common/set_globals.sh
 
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        ref: ${{ github.ref }}
 
     - name: Create mirror clone
       if: ${{ inputs.file_version_id == '' }}
@@ -124,11 +125,18 @@ runs:
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/extract_backup.sh
 
-    - name: Configure Git and Push
-      if: ${{ inputs.file_version_id != '' }}
+    - name: Configure Git and Push With Default Token
+      if: ${{ inputs.file_version_id != '' && inputs.restore_github_token == '' }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/restore/configure_push.sh
+      run: ${{ github.action_path }}/scripts/restore/push_with_default_token.sh
+      env:
+        GITHUB_DEFAULT_TOKEN: ${{ github.token }}
+
+    - name: Configure Git and Push With Restore Token
+      if: ${{ inputs.file_version_id != '' && inputs.restore_github_token != '' }}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/restore/push_with_restore_token.sh
       env:
         RESTORE_TOKEN: ${{ inputs.restore_github_token }}
-        GITHUB_DEFAULT_TOKEN: ${{ github.token }}
+    
     
