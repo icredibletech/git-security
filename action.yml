@@ -12,6 +12,10 @@ inputs:
   encryption_password:
     description: 'Encryption key (min 32 characters)'
     required: true
+  action:
+    description: 'Select operation type (backup or restore)'
+    required: false
+    default: 'backup'
   file_version_id:
     description: 'Required for restore operations'
     required: false
@@ -38,6 +42,7 @@ runs:
       run: ${{ github.action_path }}/scripts/common/validate_inputs.sh
       env:
         OTP_REQUEST_TYPE: ${{ inputs.otp_request_type }}
+        ACTION: ${{ inputs.action }}
 
     - name: Set global variables
       shell: bash
