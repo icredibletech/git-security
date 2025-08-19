@@ -33,6 +33,7 @@ runs:
   using: 'composite'
   steps:
 
+# region Common Setup Steps
     - name: Checkout Repository
       uses: actions/checkout@v4
       with:
@@ -56,8 +57,8 @@ runs:
     - name: Set global variables
       shell: bash
       run: ${{ github.action_path }}/scripts/common/set_globals.sh
-
-
+# endregion
+# region Backup Steps
     - name: Create mirror clone
       if: ${{ inputs.action == 'backup' }}
       shell: bash
@@ -79,13 +80,12 @@ runs:
       run: ${{ github.action_path }}/scripts/backup/encrypt_repo.sh
       env:
         ENCRYPTION_PASSWORD: ${{ inputs.encryption_password }}
-        
+
     - name: Get activation token
       shell: bash
       run: ${{ github.action_path }}/scripts/common/get_token.sh
       env:
         ACTIVATION_CODE: ${{ inputs.activation_code }}
-
     - name: Upload backup
       if: ${{ inputs.action == 'backup' }}
       shell: bash
@@ -95,28 +95,29 @@ runs:
       if: ${{ inputs.action == 'backup' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/backup/print_summary.sh
-
+# endregion
+# region Restore Steps
     - name: Request OTP
-      if: ${{ inputs.action == 'restore' && inputs.file_version_id != '' }}
+      if: ${{ inputs.action == 'restore' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/request_otp.sh
       env:
         OTP_TYPE: ${{ inputs.otp_request_type }}
 
     - name: Verify OTP
-      if: ${{ inputs.action == 'restore' && inputs.file_version_id != '' }}
+      if: ${{ inputs.action == 'restore' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/verify_otp.sh
 
     - name: Retrieve backup
-      if: ${{ inputs.action == 'restore' && inputs.file_version_id != '' }}
+      if: ${{ inputs.action == 'restore' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/retrieve_backup.sh
       env:
         FILE_VERSION_ID: ${{ inputs.file_version_id }}
 
     - name: Decrypt backup
-      if: ${{ inputs.action == 'restore' && inputs.file_version_id != '' }}
+      if: ${{ inputs.action == 'restore' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/decrypt_backup.sh
       env:
@@ -128,17 +129,17 @@ runs:
       run: ${{ github.action_path }}/scripts/restore/extract_backup.sh
 
     - name: Configure Git and Push With Default Token
-      if: ${{ inputs.action == 'restore' && inputs.file_version_id != '' && inputs.restore_github_token == '' }}
+      if: ${{ inputs.action == 'restore' && inputs.restore_github_token == '' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/push_with_default_token.sh
       env:
         GITHUB_DEFAULT_TOKEN: ${{ github.token }}
 
     - name: Configure Git and Push With Restore Token
-      if: ${{ inputs.action == 'restore' && inputs.file_version_id != '' && inputs.restore_github_token != '' }}
+      if: ${{ inputs.action == 'restore' && inputs.restore_github_token != '' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/push_with_restore_token.sh
       env:
         RESTORE_TOKEN: ${{ inputs.restore_github_token }}
     
-    
+# endregion
