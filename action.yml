@@ -50,6 +50,8 @@ runs:
         OTP_REQUEST_TYPE: ${{ inputs.otp_request_type }}
         ACTION: ${{ inputs.action }}
         ENCRYPTION_PASSWORD: ${{ inputs.encryption_password }}
+        FILE_VERSION_ID: ${{ inputs.file_version_id }}
+        ACTIVATION_CODE: ${{ inputs.activation_code }}
 
     - name: Set global variables
       shell: bash
