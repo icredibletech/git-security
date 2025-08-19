@@ -4,6 +4,26 @@
 
 This GitHub Action provides a comprehensive solution for securely backing up and restoring your repositories using military-grade encryption and compression.
 
+# 📋 Requirements
+
+To use this action, you must meet the following requirements.
+
+
+1. GitHub Secrets (Required)
+  You must store the necessary sensitive data in your repository's Settings > Secrets > Actions section.
+   -  ACTIVATION_CODE: The activation code provided by your API service.
+   -  ENCRYPTION_PASSWORD: A secure password of at least 32 characters used to encrypt your backups.
+
+2. Personal Access Token (Optional)
+  This step is required if you want to restore the .github/workflows directory in your repository. This step is required if you want to restore the .github/workflows directory in your repository. If this token is not provided, the relevant directory within the backup file to be restored is deleted and the information is restored. Since this information is stored in the iCredible File Security, you can restore the github/workflows directory at any time.
+   - RESTORE_PAT_TOKEN: A Personal Access Token (PAT) with repo and workflow permissions.
+    - Usage: Used only during the restore operation to also recover workflow files.
+
+3. Workflow Files (Required)
+   - For backup: You can create a file named icredible_repository_shield.yml.
+   - For restore: You can create a file named icredible_repository_restore.yml.
+
+
 ### Features
 - 🔒 AES-256-CBC encryption with PBKDF2 key derivation
 - ⚡ Zstandard (ZSTD) compression at level 9
