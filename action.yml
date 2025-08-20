@@ -123,10 +123,15 @@ runs:
       env:
         ENCRYPTION_PASSWORD: ${{ inputs.encryption_password }}
         
-    - name: Extract backup
+    - name: Extract Backup
       if: ${{ inputs.action == 'restore' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/extract_backup.sh
+
+    - name: Filter Backup File
+      if: ${{ inputs.action == 'restore' && inputs.restore_github_token == ''}}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/restore/filter_workflows.sh
 
     - name: Configure Git and Push
       if: ${{ inputs.action == 'restore' }}
@@ -135,6 +140,5 @@ runs:
       env:
         REPOSITORY_RESTORATION_TOKEN: ${{ inputs.restore_github_token }}
         GITHUB_DEFAULT_TOKEN: ${{ github.token }}
-        ACTION_PATH: ${{ github.action_path }}
     
 # endregion

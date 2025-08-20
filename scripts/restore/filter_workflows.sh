@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+cd repo-mirror
 
 sudo apt-get install -y git-filter-repo > /dev/null 2>&1
 git filter-repo --force --path .github/workflows --invert-paths

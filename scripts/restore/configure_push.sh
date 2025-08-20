@@ -3,7 +3,6 @@ set -e
 cd repo-mirror
 
 TOKEN_TO_USE=${REPOSITORY_RESTORATION_TOKEN:-$GITHUB_DEFAULT_TOKEN}
-[ -z "$REPOSITORY_RESTORATION_TOKEN" ]  && bash $ACTION_PATH/scripts/restore/filter_workflows.sh
 
 git config user.name "$GIT_USER_NAME"
 git config user.email "$GIT_USER_EMAIL"
