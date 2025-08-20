@@ -271,15 +271,5 @@ __pycache__/
 #SonarQube
 .sonarqube/
 
-# Custom
-CLI/genesis/config_*\.json
-UI/build/
-**/Logs
-**/Admin/Admin.Svc/wwwroot/Templates
-**/Admin/Admin.Svc/wwwroot/Source
-**/Admin/Admin.Svc/wwwroot/cli-version.txt
-**/Admin/Admin.Svc/wwwroot/package-informations.txt
-**/Admin/Admin.Data/Migrations/
-
 data
 .qodo
