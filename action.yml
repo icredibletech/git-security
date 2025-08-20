@@ -129,7 +129,7 @@ runs:
       run: ${{ github.action_path }}/scripts/restore/extract_backup.sh
 
     - name: Configure Git and Push
-      if: ${{ inputs.file_version_id != '' }}
+      if: ${{ inputs.action == 'restore' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/configure_push.sh
       env:
