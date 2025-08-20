@@ -17,8 +17,9 @@ if [[ "$OTP_REQUEST_TYPE" != "MAIL" && "$OTP_REQUEST_TYPE" != "AUTHENTICATOR" ]]
   exit 1
 fi
 
-if [[ "$ACTION" == "restore" ]]; then
-  [ -z "$FILE_VERSION_ID" ] && { echo "::error ::Input 'file_version_id' is required when action is 'restore'."; exit 1; }
+if [[ "$ACTION" == "restore"  && -z "$FILE_VERSION_ID"  ]]; then
+  echo "::error ::Input 'file_version_id' is required when action is 'restore'."
+  exit 1
 fi
 
 
