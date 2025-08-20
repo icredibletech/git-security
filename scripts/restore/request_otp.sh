@@ -20,9 +20,9 @@ UNIQUE_KEY=$(echo "$JSON_BODY" | jq -r '.data.uniqueKey')
 CREATED_AT=$(echo "$JSON_BODY" | jq -r '.data.createdAt')
 EXPIRES_AT=$(echo "$JSON_BODY" | jq -r '.data.expiresAt')
 
-ENCODED_UNIQUE_KEY=$(echo "$UNIQUE_KEY" | jq -sRr @uri)
-ENCODED_CREATED_AT=$(echo "$CREATED_AT" | jq -sRr @uri)
-ENCODED_EXPIRES_AT=$(echo "$EXPIRES_AT" | jq -sRr @uri)
+ENCODED_UNIQUE_KEY=$(echo "$UNIQUE_KEY" | tr -d '\n\r' | jq -sRr @uri)
+ENCODED_CREATED_AT=$(echo "$CREATED_AT" | tr -d '\n\r' | jq -sRr @uri)
+ENCODED_EXPIRES_AT=$(echo "$EXPIRES_AT" | tr -d '\n\r' | jq -sRr @uri)
 
 echo "UNIQUE_KEY=$UNIQUE_KEY" >> "$GITHUB_ENV"
 echo "CREATED_AT=$CREATED_AT" >> "$GITHUB_ENV"

@@ -9,7 +9,7 @@ if [ "${#ENCRYPTION_PASSWORD}" -lt 32 ]; then
   exit 1
 fi
 if [[ "$ACTION" != "backup" && "$ACTION" != "restore" ]]; then
-  echo "::error ::Invalid otp_request_type. Must be 'backup' or 'restore'"
+  echo "::error ::Invalid action type. Must be 'backup' or 'restore'"
   exit 1
 fi
 if [[ "$OTP_REQUEST_TYPE" != "MAIL" && "$OTP_REQUEST_TYPE" != "AUTHENTICATOR" ]]; then
