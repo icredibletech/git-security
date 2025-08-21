@@ -1,17 +1,25 @@
 #!/bin/bash
+set -e
 cd repo-mirror
-ls -la
-if [ -z "$REPOSITORY_RESTORATION_TOKEN" ]; then
-  sudo apt-get install -y git-filter-repo
-  git filter-repo --force --path .github/workflows --invert-paths
-  TOKEN_TO_USE="$GITHUB_DEFAULT_TOKEN"
-  echo "::warning title=Information About The Scope Of Restoration::The repository will be restored without the ./.github/workflow directory. If you want to restore this directory, you can find the relevant steps at the following link: https://github.com/berkayy-atas/All-in-One-Repo-Repair-Kit?tab=readme-ov-file#step-1-create-a-personal-access-token"
-else
-  TOKEN_TO_USE="$REPOSITORY_RESTORATION_TOKEN"
+
+TOKEN_TO_USE=${ICREDIBLE_REPOSITORY_RESTORE_TOKEN:-$GITHUB_DEFAULT_TOKEN}
+REMOTE_URL="https://x-access-token:$TOKEN_TO_USE@github.com/$GITHUB_REPOSITORY.git"
+
+git config user.name "$GIT_USER_NAME"
+git config user.email "$GIT_USER_EMAIL"
+
+
+if [[ "$ICREDIBLE_REPOSITORY_RESTORE_TOKEN" == "" ]]; then
+  git push --mirror --force "$REMOTE_URL"
+  echo "::notice title=Success!::Repository restored successfully"
+  exit 0;
 fi
 
-git config user.name "myapp File Security"
-git config user.email "file-security@myapp.com"
-git push --mirror --force "https://x-access-token:$TOKEN_TO_USE@github.com/$GITHUB_REPOSITORY.git"
+# Push all local branch to remote
+for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/); do
+    git push "$REMOTE_URL" "$branch" --force
+done
+
+git push "$REMOTE_URL" --tags --force
 
 echo "::notice title=Success!::Repository restored successfully"

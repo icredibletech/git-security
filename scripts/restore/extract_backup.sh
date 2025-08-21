@@ -1,4 +1,4 @@
 #!/bin/bash
-zstd -d repo.tar.zst -o repo.tar
-tar -xf repo.tar
-rm repo.tar repo.tar.zst repo.tar.zst.enc
+zstd -d $COMPRESSED_ARCHIVE_FILE -o $TAR_ARCHIVE_FILE
+tar -xf $TAR_ARCHIVE_FILE
+rm $TAR_ARCHIVE_FILE $COMPRESSED_ARCHIVE_FILE $ENC_ARCHIVE_FILE

@@ -9,14 +9,18 @@ inputs:
   icredible_activation_code:
     description: 'Your unique activation code for the iCredible service. This is required to authenticate and authorize the action to perform backup and restore operations.'
     required: true
-  encryption_password:
+  icredible_encryption_password:
     description: 'The secret password used to encrypt the repository backup and decrypt it during restoration. Must be at least 32 characters long for strong AES-256 encryption.'
     required: true
+  action:
+    description: 'Select operation type (backup or restore)'
+    required: false
+    default: 'backup'
   file_version_id:
     description: 'The unique identifier of the backup version you wish to restore. Providing a value for this input triggers the restore workflow. Leave this empty to perform a backup.'
     required: false
     default: ''
-  repository_restoration_token:
+  icredible_repository_restore_token:
     description: "A GitHub Personal Access Token (PAT) with 'repo' and 'workflow' scopes. This is required only for the restore operation to push the restored repository and its history."
     required: false
     default: ''
@@ -29,6 +33,13 @@ runs:
   using: 'composite'
   steps:
 
+# region Common Setup Steps
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        ref: ${{ github.ref }}
+
     - name: Set Script Execution Permissions
       shell: bash
       run: chmod -R +x ${{ github.action_path }}/scripts
@@ -38,44 +49,43 @@ runs:
       run: ${{ github.action_path }}/scripts/common/validate_inputs.sh
       env:
         OTP_DELIVERY_METHOD: ${{ inputs.otp_delivery_method }}
+        ACTION: ${{ inputs.action }}
+        ICREDIBLE_ENCRYPTION_PASSWORD: ${{ inputs.icredible_encryption_password }}
+        FILE_VERSION_ID: ${{ inputs.file_version_id }}
+        ICREDIBLE_ACTIVATION_CODE: ${{ inputs.icredible_activation_code }}
 
     - name: Initialize Environment Variables
       shell: bash
       run: ${{ github.action_path }}/scripts/common/set_globals.sh
-
-    - name: Verify Encryption Password Strength
-      shell: bash
-      run: ${{ github.action_path }}/scripts/common/validate_password.sh
-      env:
-        ENCRYPTION_PASSWORD: ${{ inputs.encryption_password }}
 
     - name: Checkout Repository
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
         ref: ${{ github.ref }}
-
-    - name: Create Repository Mirror
-      if: ${{ inputs.file_version_id == '' }}
+# endregion
+# region Backup Steps
+    - name: Create mirror clone
+      if: ${{ inputs.action == 'backup' }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/shield/mirror_clone.sh
+      run: ${{ github.action_path }}/scripts/backup/mirror_clone.sh
       
     - name: Install System Dependencies
-      if: ${{ inputs.file_version_id == '' }}
+      if: ${{ inputs.action == 'backup' }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/shield/install_deps.sh
+      run: ${{ github.action_path }}/scripts/backup/install_deps.sh
 
     - name: Compress Repository Data
-      if: ${{ inputs.file_version_id == '' }}
+      if: ${{ inputs.action == 'backup' }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/shield/compress_repo.sh
+      run: ${{ github.action_path }}/scripts/backup/compress_repo.sh
       
     - name: Encrypt Backup Archive
-      if: ${{ inputs.file_version_id == '' }}
+      if: ${{ inputs.action == 'backup' }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/shield/encrypt_repo.sh
+      run: ${{ github.action_path }}/scripts/backup/encrypt_repo.sh
       env:
-        ENCRYPTION_PASSWORD: ${{ inputs.encryption_password }}
+        ICREDIBLE_ENCRYPTION_PASSWORD: ${{ inputs.icredible_encryption_password }}
         
     - name: Retrieve Activation Token
       shell: bash
@@ -87,48 +97,61 @@ runs:
     - name: Transfer Backup Archive
       if: ${{ inputs.file_version_id == '' }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/shield/upload_backup.sh
+      run: ${{ github.action_path }}/scripts/backup/upload_backup.sh
 
     - name: Display Backup Report
-      if: ${{ inputs.file_version_id == '' }}
+      if: ${{ inputs.action == 'backup' }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/shield/print_summary.sh
-
+      run: ${{ github.action_path }}/scripts/backup/print_summary.sh
+# endregion
+# region Restore Steps
     - name: Request OTP
-      if: ${{ inputs.file_version_id != '' }}
+      if: ${{ inputs.action == 'restore' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/request_otp.sh
       env:
         OTP_DELIVERY_METHOD: ${{ inputs.otp_delivery_method }}
 
     - name: Authenticate OTP Code
-      if: ${{ inputs.file_version_id != '' }}
+      if: ${{ inputs.action == 'restore' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/verify_otp.sh
 
     - name: Fetch Backup Archive
-      if: ${{ inputs.file_version_id != '' }}
+      if: ${{ inputs.action == 'restore' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/retrieve_backup.sh
       env:
         FILE_VERSION_ID: ${{ inputs.file_version_id }}
 
     - name: Decrypt Backup Archive
-      if: ${{ inputs.file_version_id != '' }}
+      if: ${{ inputs.action == 'restore' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/decrypt_backup.sh
       env:
-        ENCRYPTION_PASSWORD: ${{ inputs.encryption_password }}
+        ICREDIBLE_ENCRYPTION_PASSWORD: ${{ inputs.icredible_encryption_password }}
         
     - name: Restore Repository Data
-      if: ${{ inputs.file_version_id != '' }}
+      if: ${{ inputs.action == 'restore' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/extract_backup.sh
 
+    - name: Prepare Backup File for Default Token
+      if: ${{ inputs.action == 'restore' && inputs.icredible_repository_restore_token == ''}}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/restore/filter_workflows.sh
+
+    - name: Prepare Backup File for PAT Token
+      if: ${{ inputs.action == 'restore' && inputs.icredible_repository_restore_token != ''}}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/restore/convert_remote_branches_to_local_branches.sh
+
     - name: Configure Git and Push
-      if: ${{ inputs.file_version_id != '' }}
+      if: ${{ inputs.action == 'restore' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/configure_push.sh
       env:
-        REPOSITORY_RESTORATION_TOKEN: ${{ inputs.repository_restoration_token }}
+        ICREDIBLE_REPOSITORY_RESTORE_TOKEN: ${{ inputs.icredible_repository_restore_token }}
         GITHUB_DEFAULT_TOKEN: ${{ github.token }}
+    
+# endregion
