@@ -128,10 +128,15 @@ runs:
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/extract_backup.sh
 
-    - name: Filter Backup File
+    - name: Prepare Backup File for Default Token
       if: ${{ inputs.action == 'restore' && inputs.restore_github_token == ''}}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/filter_workflows.sh
+
+    - name: Prepare Backup File for PAT Token
+      if: ${{ inputs.action == 'restore' && inputs.restore_github_token != ''}}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/restore/convert_remote_branches_to_local_branches.sh
 
     - name: Configure Git and Push
       if: ${{ inputs.action == 'restore' }}
