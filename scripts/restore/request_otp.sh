@@ -8,21 +8,21 @@ RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$API_BASE_URL/OTP/Send" \
     "Type": "'"$OTP_TYPE"'"
   }')
 
-HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
-JSON_BODY=$(echo "$RESPONSE" | head -n -1)
+HTTP_STATUS=$(echo -n "$RESPONSE" | tail -n1)
+JSON_BODY=$(echo -n "$RESPONSE" | head -n -1)
 
 if [ "$HTTP_STATUS" -ne 200 ]; then
   echo "::error ::OTP request failed ($HTTP_STATUS): $(echo "$JSON_BODY" | jq -r '.message')"
   exit 1
 fi
 
-UNIQUE_KEY=$(echo "$JSON_BODY" | jq -r '.data.uniqueKey')
-CREATED_AT=$(echo "$JSON_BODY" | jq -r '.data.createdAt')
-EXPIRES_AT=$(echo "$JSON_BODY" | jq -r '.data.expiresAt')
+UNIQUE_KEY=$(echo -n "$JSON_BODY" | jq -r '.data.uniqueKey')
+CREATED_AT=$(echo -n "$JSON_BODY" | jq -r '.data.createdAt')
+EXPIRES_AT=$(echo -n "$JSON_BODY" | jq -r '.data.expiresAt')
 
-ENCODED_UNIQUE_KEY=$(echo "$UNIQUE_KEY" | tr -d '\n\r' | jq -sRr @uri)
-ENCODED_CREATED_AT=$(echo "$CREATED_AT" | tr -d '\n\r' | jq -sRr @uri)
-ENCODED_EXPIRES_AT=$(echo "$EXPIRES_AT" | tr -d '\n\r' | jq -sRr @uri)
+ENCODED_UNIQUE_KEY=$(echo -n "$UNIQUE_KEY" | jq -sRr @uri)
+ENCODED_CREATED_AT=$(echo -n "$CREATED_AT" | jq -sRr @uri)
+ENCODED_EXPIRES_AT=$(echo -n "$EXPIRES_AT" | jq -sRr @uri)
 
 echo "UNIQUE_KEY=$UNIQUE_KEY" >> "$GITHUB_ENV"
 echo "CREATED_AT=$CREATED_AT" >> "$GITHUB_ENV"
