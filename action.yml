@@ -144,7 +144,7 @@ runs:
     - name: Prepare Backup File for PAT Token
       if: ${{ inputs.action == 'restore' && inputs.icredible_repository_restore_token != ''}}
       shell: bash
-      run: ${{ github.action_path }}/scripts/restore/convert_remote_branches_to_local_branches.sh
+      run: ${{ github.action_path }}/scripts/restore/sync_remote_branches.sh
 
     - name: Configure Git and Push
       if: ${{ inputs.action == 'restore' }}
