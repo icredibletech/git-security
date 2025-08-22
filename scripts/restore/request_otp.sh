@@ -8,17 +8,17 @@ RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$API_BASE_URL/OTP/Send" \
     "Type": "'"$OTP_DELIVERY_METHOD"'"
   }')
 
-HTTP_STATUS=$(echo -n "$RESPONSE" | tail -n1)
-JSON_BODY=$(echo -n "$RESPONSE" | head -n -1)
+HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+JSON_BODY=$(echo "$RESPONSE" | head -n -1)
 
 if [ "$HTTP_STATUS" -ne 200 ]; then
   echo "::error ::OTP request failed ($HTTP_STATUS): $(echo "$JSON_BODY" | jq -r '.message')"
   exit 1
 fi
 
-UNIQUE_KEY=$(echo -n "$JSON_BODY" | jq -r '.data.uniqueKey')
-CREATED_AT=$(echo -n "$JSON_BODY" | jq -r '.data.createdAt')
-EXPIRES_AT=$(echo -n "$JSON_BODY" | jq -r '.data.expiresAt')
+UNIQUE_KEY=$(echo "$JSON_BODY" | jq -r '.data.uniqueKey')
+CREATED_AT=$(echo "$JSON_BODY" | jq -r '.data.createdAt')
+EXPIRES_AT=$(echo "$JSON_BODY" | jq -r '.data.expiresAt')
 
 ENCODED_UNIQUE_KEY=$(echo -n "$UNIQUE_KEY" | jq -sRr @uri)
 ENCODED_CREATED_AT=$(echo -n "$CREATED_AT" | jq -sRr @uri)

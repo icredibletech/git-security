@@ -41,16 +41,16 @@ RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
     "${curl_args[@]}"
 )
 
-HTTP_STATUS=$(echo -n "$RESPONSE" | tail -n1)
-JSON_BODY=$(echo -n "$RESPONSE" | head -n -1)
+HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+JSON_BODY=$(echo "$RESPONSE" | head -n -1)
 
 if [ "$HTTP_STATUS" -ne 200 ]; then
     echo "::error ::Upload failed: $JSON_BODY"
     exit 1
 fi
 
-echo "recordId=$(echo -n "$JSON_BODY" | jq -r '.data.recordId')" >> "$GITHUB_ENV"
-echo "directoryRecordId=$(echo -n "$JSON_BODY" | jq -r '.data.directoryRecordId')" >> "$GITHUB_ENV"
+echo "recordId=$(echo "$JSON_BODY" | jq -r '.data.recordId')" >> "$GITHUB_ENV"
+echo "directoryRecordId=$(echo "$JSON_BODY" | jq -r '.data.directoryRecordId')" >> "$GITHUB_ENV"
 
 echo "commit=$COMMIT" >> "$GITHUB_ENV"
 echo "commitShort=$SHORT" >> "$GITHUB_ENV"
@@ -58,7 +58,7 @@ echo "parents=$PARENTS" >> "$GITHUB_ENV"
 echo "author=$AUTHOR" >> "$GITHUB_ENV"
 echo "date=$DATE" >> "$GITHUB_ENV"
 echo "committer=$COMMITTER" >> "$GITHUB_ENV"
-ENCODED_MESSAGE=$(echo -n "$MESSAGE" | base64)
+ENCODED_MESSAGE=$(echo "$MESSAGE" | base64)
 echo "message_b64=$ENCODED_MESSAGE" >> "$GITHUB_ENV"
 
 echo "Backup successfully uploaded. Summary being created..."

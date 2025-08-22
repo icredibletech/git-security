@@ -48,11 +48,12 @@ runs:
       shell: bash
       run: ${{ github.action_path }}/scripts/common/validate_inputs.sh
       env:
-        OTP_DELIVERY_METHOD: ${{ inputs.otp_delivery_method }}
-        ACTION: ${{ inputs.action }}
+        ICREDIBLE_ACTIVATION_CODE: ${{ inputs.icredible_activation_code }}
         ICREDIBLE_ENCRYPTION_PASSWORD: ${{ inputs.icredible_encryption_password }}
         FILE_VERSION_ID: ${{ inputs.file_version_id }}
-        ICREDIBLE_ACTIVATION_CODE: ${{ inputs.icredible_activation_code }}
+        OTP_DELIVERY_METHOD: ${{ inputs.otp_delivery_method }}
+        ACTION: ${{ inputs.action }}
+
 
     - name: Initialize Environment Variables
       shell: bash

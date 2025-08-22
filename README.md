@@ -1,5 +1,3 @@
-# All-in-One-Repo-Repair-Kit
-
 ## Overview
 
 This GitHub Action provides a comprehensive solution for securely backing up and restoring your repositories using military-grade encryption and compression.
@@ -20,8 +18,8 @@ To use this action, you must meet the following requirements.
     - Usage: Used only during the restore operation to also recover workflow files.
 
 3. Workflow Files (Required)
-   - For backup: You can create a file named icredible_repository_shield.yml.
-   - For restore: You can create a file named icredible_repository_restore.yml.
+   - For backup: You can create a file named icredible-git-sec-backup.yml.
+   - For restore: You can create a file named icredible-git-sec-restore.yml.
 
 
 ### Features
@@ -62,7 +60,7 @@ To use this action, you must meet the following requirements.
 ## 🔄 Backup Workflow
 
 Add your workflow file 
-   Create a file at `.github/workflows/icredible_repository_backup.yml` and paste in the block below:
+   Create a file at `.github/workflows/icredible-git-sec-backup.yml` and paste in the block below:
 
 ```yaml
 name: "iCredible Repository Backup Process"
@@ -79,11 +77,12 @@ jobs:
          with:
             fetch-depth: 0
     
-       - name: "The iCredible shield operation was triggered by ${{ github.actor }}"
+       - name: "The iCredible backup operation was triggered by ${{ github.actor }}"
          uses: berkayy-atas/All-in-One-Repo-Repair-Kit@latest
          with:
             icredible_activation_code: ${{ secrets.ICREDIBLE_ACTIVATION_CODE }}
             icredible_encryption_password: ${{ secrets.ICREDIBLE_ENCRYPTION_PASSWORD }}
+            action: 'backup'
 ```
 ---
 
@@ -93,7 +92,7 @@ jobs:
 > **⚠️ Note**
 > This is designed for empty repositories—it will overwrite all history.
 
-Create a file at `.github/workflows/icredible_repository_restore.yml` and paste in the block below:
+Create a file at `.github/workflows/icredible-git-sec-restore.yml` and paste in the block below:
 
 ```yaml
 name: "iCredible Repository Restore Procedure"
@@ -121,6 +120,7 @@ jobs:
             icredible_activation_code: ${{ secrets.ICREDIBLE_ACTIVATION_CODE }}
             icredible_encryption_password: ${{ secrets.ICREDIBLE_ENCRYPTION_PASSWORD }}
             file_version_id: ${{ github.event.inputs.FILE_VERSION_ID }}
+            action: 'restore'
 ```
 # 🔑 Personal Access Token (PAT) Setup Guide for Repository Restoration
 
@@ -133,8 +133,8 @@ jobs:
 ## Step 2: Configure Token Permissions
 Set these required permissions:
 ```yml
-Note: "iCredible-Repository-Restore-Token"  # Example name
-Expiration: 30 days             # Recommended duration
+Note: "iCredible-Git-Security-Restore-Token"  # Example name
+Expiration: 30 days                           # Recommended duration
 Permissions:
 - repo       # Select ALL repository permissions
 - workflow   # Required for workflow restoration
@@ -151,7 +151,7 @@ Secret: [Paste your generated token here]
 ```
 ## Step 4: Configure Workflow File
 
-Add this to your restoration workflow (.github/workflows/restore.yml):
+Add this to your restoration workflow (.github/workflows/icredible-git-sec-restore.yml):
 
 ```yaml
 icredible_repository_restore_token: ${{ secrets.ICREDIBLE_REPOSITORY_RESTORE_TOKEN }} 

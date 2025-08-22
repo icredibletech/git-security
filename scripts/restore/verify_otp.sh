@@ -7,8 +7,8 @@ while [ $(date +%s) -lt $end_time ]; do
     -H "Authorization: Bearer $TOKEN" \
     -d '{"uniqueKey": "'"$UNIQUE_KEY"'"}')
   
-  HTTP_STATUS=$(echo -n "$RESPONSE" | tail -n1)
-  JSON_BODY=$(echo -n "$RESPONSE" | head -n -1)
+  HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+  JSON_BODY=$(echo "$RESPONSE" | head -n -1)
 
   if [ "$HTTP_STATUS" -eq 200 ] && [ "$(echo "$JSON_BODY" | jq -r '.data')" == "true" ]; then
     echo "OTP verified successfully"

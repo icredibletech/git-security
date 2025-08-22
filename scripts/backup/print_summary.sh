@@ -5,7 +5,7 @@ set -e
 UPLOAD_METADATA=""
 if [ -n "$commit" ]; then
     # decode the Base64-encoded message
-    DECODED_MESSAGE=$(echo -n "$message_b64" | base64 -d)
+    DECODED_MESSAGE=$(echo "$message_b64" | base64 -d)
     UPLOAD_METADATA=$(cat <<EOF
 --------------------------------------------------
 **Upload Metadata**
@@ -33,7 +33,7 @@ $UPLOAD_METADATA
 --------------------------------------------------
 **API Response**
 - File version id: $recordId
-- You can access the shielded file from this link : $MGMT_BASE_URL/dashboard/file-management/$endpointId/$directoryRecordId
+- You can access the backed-up file from this link: $MGMT_BASE_URL/dashboard/file-management/$endpointId/$directoryRecordId
 EOF
 )
 
