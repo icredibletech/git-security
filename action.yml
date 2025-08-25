@@ -147,6 +147,13 @@ runs:
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/sync_remote_branches.sh
 
+    - name: Suspend Repository Operations for Safe Restore
+      if: ${{ inputs.action == 'restore' }}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/restore/suspend_operations.sh
+      env:
+        GH_TOKEN: ${{ inputs.icredible_repository_restore_token }}
+
     - name: Configure Git and Push
       if: ${{ inputs.action == 'restore' }}
       shell: bash
@@ -154,5 +161,12 @@ runs:
       env:
         ICREDIBLE_REPOSITORY_RESTORE_TOKEN: ${{ inputs.icredible_repository_restore_token }}
         GITHUB_DEFAULT_TOKEN: ${{ github.token }}
+        
+    - name: Restore Repository Operations After Completion
+      if: ${{ inputs.action == 'restore' }}
+      shell: bash
+      run: ${{ github.action_path }}/scripts/restore/restore_operations.sh
+      env:
+        GH_TOKEN: ${{ inputs.icredible_repository_restore_token }}
     
 # endregion
