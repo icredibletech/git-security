@@ -25,7 +25,7 @@ SUMMARY=$(cat <<EOF
 --------------------------------------------------
 **Git Metadata**
 Repository: $GITHUB_REPOSITORY
-- Owner: $GITHUB_REPOSITORY_OWNER [$GITHUB_EVENT_REPOSITORY_OWNER_TYPE]
+- Owner: $GITHUB_REPOSITORY_OWNER [$OWNER_TYPE]
 - Event: $GITHUB_EVENT_NAME
 - Ref:   $GITHUB_REF
 - Actor: $GITHUB_ACTOR

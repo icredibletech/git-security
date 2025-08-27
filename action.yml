@@ -63,6 +63,8 @@ runs:
     - name: Initialize Environment Variables
       shell: bash
       run: ${{ github.action_path }}/scripts/common/set_globals.sh
+      env:
+        OWNER_TYPE: ${{ github.event.repository.owner.type }}
 
     - name: Checkout Repository
       uses: actions/checkout@v4
