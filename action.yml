@@ -150,7 +150,7 @@ runs:
     - name: Suspend Repository Operations for Safe Restore
       if: ${{ inputs.action == 'restore' }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/restore/suspend_operations.sh
+      run: ${{ github.action_path }}/scripts/restore/pause_actions.sh
       env:
         GH_TOKEN: ${{ inputs.icredible_repository_restore_token }}
 
@@ -165,7 +165,7 @@ runs:
     - name: Restore Repository Operations After Completion
       if: ${{ inputs.action == 'restore' }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/restore/restore_operations.sh
+      run: ${{ github.action_path }}/scripts/restore/resume_actions.sh
       env:
         GH_TOKEN: ${{ inputs.icredible_repository_restore_token }}
     

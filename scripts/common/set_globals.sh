@@ -24,3 +24,5 @@ echo "OTP_SOURCE_TYPE=FileDownload" >> $GITHUB_ENV
 echo "OTP_GEN_MODE=Number" >> $GITHUB_ENV
 echo "ENDPOINT_TYPE=Workstation" >> $GITHUB_ENV
 echo "ENDPOINT_NAME=Github Endpoint ('"$GITHUB_REPOSITORY"')" >> $GITHUB_ENV
+echo "ACTIONS_PERM=actions_permissions.json" >> $GITHUB_ENV
+

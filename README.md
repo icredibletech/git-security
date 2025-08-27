@@ -95,7 +95,7 @@ jobs:
 Create a file at `.github/workflows/icredible-git-sec-restore.yml` and paste in the block below:
 
 ```yaml
-name: "iCredible Repository Restore Procedure"
+name: "iCredible Repository Restore Process"
 permissions: write-all
 
 on:
@@ -151,7 +151,7 @@ Secret: [Paste your generated token here]
 ```
 ## Step 4: Configure Workflow File
 
-Add this to your restoration workflow (.github/workflows/icredible-git-sec-restore.yml):
+Add this to your restore workflow (.github/workflows/icredible-git-sec-restore.yml):
 
 ```yaml
 icredible_repository_restore_token: ${{ secrets.ICREDIBLE_REPOSITORY_RESTORE_TOKEN }} 
