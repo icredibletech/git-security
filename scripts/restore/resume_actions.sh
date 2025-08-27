@@ -3,7 +3,7 @@ set -e
 
 echo "Restoring original repository settings..."
 
-if [! -f /tmp/$ACTIONS_PERM ]; then
+if [! -f $ACTIONS_PERMISSIONS_FILE_PATH ]; then
   echo "Warning: Original permissions file not found. Re-enabling Actions with default settings."
   gh api \
     --method PUT \
@@ -13,5 +13,5 @@ else
   gh api \
     --method PUT \
     repos/$GITHUB_REPOSITORY/actions/permissions \
-    --input /tmp/$ACTIONS_PERM
+    --input $ACTIONS_PERMISSIONS_FILE_PATH
 fi

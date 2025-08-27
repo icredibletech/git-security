@@ -120,7 +120,7 @@ jobs:
             icredible_activation_code: ${{ secrets.ICREDIBLE_ACTIVATION_CODE }}
             icredible_encryption_password: ${{ secrets.ICREDIBLE_ENCRYPTION_PASSWORD }}
             file_version_id: ${{ github.event.inputs.FILE_VERSION_ID }}
-            pause_actions: 'true'
+            suspend_actions: 'true'
             action: 'restore'
 ```
 # 🔑 Personal Access Token (PAT) Setup Guide for Repository Restoration
@@ -158,19 +158,19 @@ Add this to your restore workflow (.github/workflows/icredible-git-sec-restore.y
 icredible_repository_restore_token: ${{ secrets.ICREDIBLE_REPOSITORY_RESTORE_TOKEN }} 
 ```
 
-# ⚙️ Optional: Pausing Workflows During Restore
+# ⚙️ Optional: Suspend Workflows During Restore
 
-To ensure that the restore process runs without any interference from other automated workflows in your repository, this action includes a safety feature to temporarily pause all GitHub Actions.
+To ensure that the restore process runs without any interference from other automated workflows in your repository, this action includes a safety feature to temporarily suspend all GitHub Actions.
 
 This is highly recommended for repositories with active CI/CD pipelines or other automations.
 
 # # How It Works
   - Before Restore: The action saves your repository's current workflow settings.
-  - Pause: It then temporarily disables GitHub Actions for the entire repository.
+  - Suspend: It then temporarily disables GitHub Actions for the entire repository.
   - After Restore: Once the restore is complete (or if it fails), the action automatically restores the original workflow settings, re-enabling them.
 
 # # Configuration
 
 You can control this feature using the pause_actions input in your restore workflow file.
-  - pause_actions: 'true' (Default): Activates the safety feature. Workflows will be paused during the operation.
-  - pause_actions: 'false': Deactivates the feature. Workflows will remain active, which is not recommended unless you are sure no other actions will interfere.
+  - suspend_actions: 'true' (Default): Activates the safety feature. Workflows will be paused during the operation.
+  - suspend_actions: 'false': Deactivates the feature. Workflows will remain active, which is not recommended unless you are sure no other actions will interfere.

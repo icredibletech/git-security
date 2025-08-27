@@ -3,7 +3,7 @@ set -e
 
 echo "Reading current repository settings before suspension..."
 
-gh api repos/$GITHUB_REPOSITORY/actions/permissions > /tmp/$ACTIONS_PERM
+gh api repos/$GITHUB_REPOSITORY/actions/permissions > $ACTIONS_PERMISSIONS_FILE_PATH
 
 gh api \
   --method PUT \
