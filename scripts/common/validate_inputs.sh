@@ -18,5 +18,15 @@ if [[ "$ACTION" == "restore"  && -z "$FILE_VERSION_ID"  ]]; then
   exit 1
 fi
 
+if [[ "$ACTION" == "restore"  && -z "$PAUSE_ACTIONS"  ]]; then
+  echo "::error ::Input 'pause_actions' is required when action is 'restore'."
+  exit 1
+fi
+
+if [[ "$ACTION" == "restore"  && "$PAUSE_ACTIONS" != 'true' && "$PAUSE_ACTIONS" != 'false' ]]; then
+  echo "::error ::Invalid pause actions. Must be 'true' or 'false'"
+  exit 1
+fi
+
 
 
