@@ -155,7 +155,7 @@ runs:
       run: ${{ github.action_path }}/scripts/restore/sync_remote_branches.sh
 
     - name: Suspend Repository Operations for Safe Restore
-      if: ${{ inputs.action == 'restore' && pause_actions=='true' }}
+      if: ${{ inputs.action == 'restore' && inputs.pause_actions=='true' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/pause_actions.sh
       env:
@@ -170,7 +170,7 @@ runs:
         GITHUB_DEFAULT_TOKEN: ${{ github.token }}
         
     - name: Restore Repository Operations After Completion
-      if: ${{ always() && inputs.action == 'restore' && pause_actions=='true' }}
+      if: ${{ always() && inputs.action == 'restore' && inputs.pause_actions=='true' }}
       shell: bash
       run: ${{ github.action_path }}/scripts/restore/resume_actions.sh
       env:
