@@ -38,13 +38,12 @@ else
       echo "✓ Permissions successfully restored:"
       echo "  - Enabled: $current_enabled"
       echo "  - Allowed actions: $current_allowed_actions"
-      echo "  - Allowed actions: $current_sha_pinning_required"
+      echo "  - Sha pinning required: $current_sha_pinning_required"
       break
     else
       echo "✗ Permissions mismatch detected:"
-      echo "  Expected - Enabled: $expected_enabled, Allowed actions: $expected_allowed_actions"
-      echo "  Current  - Enabled: $current_enabled, Allowed actions: $current_allowed_actions"
-      echo "  Current  - Enabled: $current_sha_pinning_required, Allowed actions: $expected_sha_pinning_required"
+      echo "  Expected - Enabled: $expected_enabled, Allowed actions: $expected_allowed_actions, Sha pinning required: $expected_sha_pinning_required"
+      echo "  Current  - Enabled: $current_enabled, Allowed actions: $current_allowed_actions, Sha pinning required: $current_sha_pinning_required"
 
       
       if [ $attempt -lt $MAX_RETRIES ]; then

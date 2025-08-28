@@ -6,11 +6,10 @@ This GitHub Action provides a comprehensive solution for securely backing up and
 
 To use this action, you must meet the following requirements.
 
-
 1. GitHub Secrets (Required)
   You must store the necessary sensitive data in your repository's Settings > Secrets > Actions section.
    -  ICREDIBLE_ACTIVATION_CODE: The activation code provided by your API service.
-   -  ICREDIBLE_ENCRYPTION_PASSWORD: A secure password of at least 32 characters used to encrypt your backups.
+   -  ICREDIBLE_ENCRYPTION_PASSWORD: A secure password of at least 8 characters that must include: uppercase letter, lowercase letter, digit, and special character (!@#$%^&*(),.?":{}|<>). For stronger security, use at least 32 characters.
 
 2. Personal Access Token (Optional)
   This step is required if you want to restore the .github/workflows directory in your repository. This step is required if you want to restore the .github/workflows directory in your repository. If this token is not provided, the relevant directory within the backup file to be restored is deleted and the information is restored. Since this information is stored in the iCredible File Security, you can restore the github/workflows directory at any time.
@@ -45,6 +44,23 @@ To use this action, you must meet the following requirements.
 
 ---
 
+# ⚠️ IMPORTANT VERSION COMPATIBILITY NOTICE
+
+## 🔄 Version-Specific Backup & Restore Requirements
+
+**CRITICAL**: You must restore your backup using **the same version** of iCredible Git Security Action that was used to create the backup. 
+
+### 🔧 Technical Rationale
+
+Different versions may utilize:
+- **Varying encryption algorithms** (AES-256-CBC, ChaCha20, etc.)
+- **Different compression technologies** (ZSTD levels, alternative compressors)
+- **Modified archive formats** and directory structures
+- **Updated security protocols** and key derivation functions
+- **Changed metadata handling** and verification mechanisms
+
+---
+
 # 📦 Setup Guide
 
 1. **Store your Activation Code** as a GitHub Secret  
@@ -54,7 +70,11 @@ To use this action, you must meet the following requirements.
 
 2. **Store your Encryption PASSWORD** as a GitHub Secret  
    - Create a new secret named `ICREDIBLE_ENCRYPTION_PASSWORD`  
-   - Use a strong key of **at least 32 characters**
+   - Use a strong password of at least 8 characters that includes:
+     - Uppercase letter (A-Z)
+     - Lowercase letter (a-z)
+     - Digit (0-9)
+     - Special character (!@#$%^&*(),.?":{}|<>)
 
 
 ## 🔄 Backup Workflow
