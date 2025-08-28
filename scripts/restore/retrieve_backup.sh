@@ -5,8 +5,8 @@ RESPONSE=$(curl -s -w "\n%{http_code}" -X GET "${API_BASE_URL}/restore/${FILE_VE
   -H "X-Unique-Key: ${UNIQUE_KEY}" \
   -o $ENC_ARCHIVE_FILE)
 
-HTTP_STATUS=$(echo -n "$RESPONSE" | tail -n1)
-JSON_BODY=$(echo -n "$RESPONSE" | head -n -1)
+HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+JSON_BODY=$(echo "$RESPONSE" | head -n -1)
 
 if [ "$HTTP_STATUS" -ne 200 ]; then
   echo "::error::Backup file could not be retrieved."

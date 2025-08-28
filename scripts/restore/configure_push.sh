@@ -2,14 +2,14 @@
 set -e
 cd repo-mirror
 
-TOKEN_TO_USE=${REPOSITORY_RESTORATION_TOKEN:-$GITHUB_DEFAULT_TOKEN}
+TOKEN_TO_USE=${ICREDIBLE_REPOSITORY_RESTORE_TOKEN:-$GITHUB_DEFAULT_TOKEN}
 REMOTE_URL="https://x-access-token:$TOKEN_TO_USE@github.com/$GITHUB_REPOSITORY.git"
 
 git config user.name "$GIT_USER_NAME"
 git config user.email "$GIT_USER_EMAIL"
 
 
-if [[ "$REPOSITORY_RESTORATION_TOKEN" == "" ]]; then
+if [[ "$ICREDIBLE_REPOSITORY_RESTORE_TOKEN" == "" ]]; then
   git push --mirror --force "$REMOTE_URL"
   echo "::notice title=Success!::Repository restored successfully"
   exit 0;
