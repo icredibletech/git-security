@@ -9,7 +9,7 @@ To use this action, you must meet the following requirements.
 1. GitHub Secrets (Required)
   You must store the necessary sensitive data in your repository's Settings > Secrets > Actions section.
    -  ICREDIBLE_ACTIVATION_CODE: The activation code provided by your API service.
-   -  ICREDIBLE_ENCRYPTION_PASSWORD: A secure password of at least 8 characters that must include: uppercase letter, lowercase letter, digit, and special character (!@#$%^&*(),.?":{}|<>). For stronger security, use at least 32 characters.
+   -  ICREDIBLE_ENCRYPTION_PASSWORD: A secure password of at least 8 characters that must include: uppercase letter, lowercase letter, digit, and special character. For stronger security, use at least 32 characters.
 
 2. Personal Access Token (Optional)
   This step is required if you want to restore the .github/workflows directory in your repository. This step is required if you want to restore the .github/workflows directory in your repository. If this token is not provided, the relevant directory within the backup file to be restored is deleted and the information is restored. Since this information is stored in the iCredible File Security, you can restore the github/workflows directory at any time.
@@ -48,7 +48,7 @@ To use this action, you must meet the following requirements.
 
 ## 🔄 Version-Specific Backup & Restore Requirements
 
-**CRITICAL**: You must restore your backup using **the same version** of iCredible Git Security Action that was used to create the backup. 
+**CRITICAL**: You should restore your backup using **the same version** of iCredible Git Security Action that was used to create the backup. 
 
 ### 🔧 Technical Rationale
 
@@ -74,7 +74,7 @@ Different versions may utilize:
      - Uppercase letter (A-Z)
      - Lowercase letter (a-z)
      - Digit (0-9)
-     - Special character (!@#$%^&*(),.?":{}|<>)
+     - Special character
 
 
 ## 🔄 Backup Workflow
@@ -192,5 +192,5 @@ This is highly recommended for repositories with active CI/CD pipelines or other
 # # Configuration
 
 You can control this feature using the suspend_actions input in your restore workflow file.
-  - suspend_actions: 'true' (Default): Activates the safety feature. Workflows will be sespend during the operation.
+  - suspend_actions: 'true' (Default): Activates the safety feature. Workflows will be suspend during the operation.
   - suspend_actions: 'false': Deactivates the feature. Workflows will remain active, which is not recommended unless you are sure no other actions will interfere.
