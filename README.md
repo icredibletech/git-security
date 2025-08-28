@@ -98,7 +98,7 @@ jobs:
             fetch-depth: 0
     
        - name: "iCredible Git Sec | Backup"
-         uses: berkayy-atas/All-in-One-Repo-Repair-Kit@latest
+         uses: icredibletech/git-security@latest
          with:
             icredible_activation_code: ${{ secrets.ICREDIBLE_ACTIVATION_CODE }}
             icredible_encryption_password: ${{ secrets.ICREDIBLE_ENCRYPTION_PASSWORD }}
@@ -135,7 +135,7 @@ jobs:
             fetch-depth: 0
 
        - name: "iCredible Git Sec | Restore"
-         uses: berkayy-atas/All-in-One-Repo-Repair-Kit@latest
+         uses: icredibletech/git-security@latest
          with:
             icredible_activation_code: ${{ secrets.ICREDIBLE_ACTIVATION_CODE }}
             icredible_encryption_password: ${{ secrets.ICREDIBLE_ENCRYPTION_PASSWORD }}
