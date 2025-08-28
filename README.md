@@ -122,7 +122,7 @@ on:
   workflow_dispatch:
     inputs:
       file_version_id:
-        description: 'The version id of the file you want to restore. You can enter it in the first or second run while using the workflow. The version id you last entered is always kept and restored when the OTP code arrives.'
+        description: 'The version id of the file you want to restore.'
         required: true
 
 jobs:
