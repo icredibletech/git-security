@@ -171,6 +171,6 @@ This is highly recommended for repositories with active CI/CD pipelines or other
 
 # # Configuration
 
-You can control this feature using the pause_actions input in your restore workflow file.
-  - suspend_actions: 'true' (Default): Activates the safety feature. Workflows will be paused during the operation.
+You can control this feature using the suspend_actions input in your restore workflow file.
+  - suspend_actions: 'true' (Default): Activates the safety feature. Workflows will be sespend during the operation.
   - suspend_actions: 'false': Deactivates the feature. Workflows will remain active, which is not recommended unless you are sure no other actions will interfere.

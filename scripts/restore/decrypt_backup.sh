@@ -1,2 +1,3 @@
 #!/bin/bash
-openssl enc -d -aes-256-cbc -pbkdf2 -in $ENC_ARCHIVE_FILE -out $COMPRESSED_ARCHIVE_FILE -pass pass:"$ICREDIBLE_ENCRYPTION_PASSWORD"
+HASHED_PASSWORD=$(echo -n "$ICREDIBLE_ENCRYPTION_PASSWORD" | openssl dgst -sha256 | awk '{print $2}')
+openssl enc -$ENCRYPTION_ALGORITHM -in $ENC_ARCHIVE_FILE -out $COMPRESSED_ARCHIVE_FILE -pass pass:"$HASHED_PASSWORD"

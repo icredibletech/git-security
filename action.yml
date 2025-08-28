@@ -56,7 +56,7 @@ runs:
         ICREDIBLE_ENCRYPTION_PASSWORD: ${{ inputs.icredible_encryption_password }}
         FILE_VERSION_ID: ${{ inputs.file_version_id }}
         OTP_DELIVERY_METHOD: ${{ inputs.otp_delivery_method }}
-        PAUSE_ACTIONS: ${{ inputs.pause_actions }}
+        SUSPEND_ACTIONS: ${{ inputs.suspend_actions }}
         ACTION: ${{ inputs.action }}
 
 
