@@ -1,9 +1,9 @@
 name: 'iCredible Git Security'
 author: 'iCredible'
-description: 'Secure repository backup and restoration with encryption'
+description: 'Secure repository backup and restore with encryption'
 branding:
   icon: 'shield'
-  color: 'blue'
+  color: 'red'
 
 inputs:
   icredible_activation_code:
