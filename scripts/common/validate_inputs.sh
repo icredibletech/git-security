@@ -5,6 +5,12 @@ if [ "${#ICREDIBLE_ENCRYPTION_PASSWORD}" -lt 8 ]; then
   exit 1
 fi
 
+if echo "$ICREDIBLE_ENCRYPTION_PASSWORD" | grep -q '[^a-zA-Z0-9!@#$%^&*(),.?":{}|<>]'; then
+  echo "::error ::Encryption password can only contain alphanumeric characters and the following special characters: !@#$%^&*(),.?\":{}|<>"
+  echo "::error ::Emojis, unicode characters, and other symbols are not allowed."
+  exit 1
+fi
+
 if ! echo "$ICREDIBLE_ENCRYPTION_PASSWORD" | grep -q '[A-Z]'; then
   echo "::error ::Encryption password must contain at least one uppercase letter"
   exit 1
