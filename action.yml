@@ -10,7 +10,7 @@ inputs:
     description: 'Your unique activation code for the iCredible service. This is required to authenticate and authorize the action to perform backup and restore operations.'
     required: true
   icredible_encryption_password:
-    description: 'The secret password used to encrypt the repository backup and decrypt it during restoration. Must be at least 8 characters long and include: uppercase letter, lowercase letter, digit, and special character.'
+    description: 'The secret password used to encrypt the repository backup and decrypt it during restore. Must be at least 8 characters long and include: uppercase letter, lowercase letter, digit, and special character.'
     required: true
   action:
     description: 'Select operation type (backup or restore)'
@@ -29,7 +29,7 @@ inputs:
     required: false
     default: 'true'
   otp_delivery_method:
-    description: "(IN DEVELOPMENT) Specifies the delivery method for the One-Time Password (OTP) required to authorize a restore operation. Valid options are 'MAIL' or 'AUTHENTICATOR'."
+    description: "Specifies the delivery method for the OTP required to authorize a restore operation. Valid options are 'MAIL' or 'AUTHENTICATOR'."
     required: false
     default: 'MAIL'
 

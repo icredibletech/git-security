@@ -1,27 +1,33 @@
-## Overview
+# Overview
 
-This GitHub Action provides a comprehensive solution for securely backing up and restoring your repositories using military-grade encryption and compression.
+iCredible Github Security is an enterprise-level solution for secure repository backup and restore, featuring robust encryption and compression standards.
 
-# 📋 Requirements
+## 📋 Requirements
 
 To use this action, you must meet the following requirements.
 
-1. GitHub Secrets (Required)
-  You must store the necessary sensitive data in your repository's Settings > Secrets > Actions section.
-   -  ICREDIBLE_ACTIVATION_CODE: The activation code provided by your API service.
-   -  ICREDIBLE_ENCRYPTION_PASSWORD: A secure password of at least 8 characters that must include: uppercase letter, lowercase letter, digit, and special character (!@#$%^&*(),.?":{}|<>). For stronger security, use at least 32 characters.
+### GitHub Secrets
+> (Required)
 
-2. Personal Access Token (Optional)
-  This step is required if you want to restore the .github/workflows directory in your repository. This step is required if you want to restore the .github/workflows directory in your repository. If this token is not provided, the relevant directory within the backup file to be restored is deleted and the information is restored. Since this information is stored in the iCredible File Security, you can restore the github/workflows directory at any time.
-   - ICREDIBLE_REPOSITORY_RESTORE_TOKEN: A Personal Access Token (PAT) with repo and workflow permissions.
-    - Usage: Used only during the restore operation to also recover workflow files.
+You must store the necessary sensitive data in your repository's **Settings > Secrets > Actions** section.
+   -  **ICREDIBLE_ACTIVATION_CODE:** The activation code provided by your API service.
+   -  **ICREDIBLE_ENCRYPTION_PASSWORD:** A secure password of at least 8 characters that must include: uppercase letter, lowercase letter, digit, and special character (!@#$%^&*(),.?":{}|<>). For stronger security, use at least 32 characters.
 
-3. Workflow Files (Required)
-   - For backup: You can create a file named icredible-git-sec-backup.yml.
-   - For restore: You can create a file named icredible-git-sec-restore.yml.
+### Personal Access Token
+> (Optional)
+
+This step is required if you want to restore the .github/workflows directory in your repository. This step is required if you want to restore the .github/workflows directory in your repository. If this token is not provided, the relevant directory within the backup file to be restored is deleted and the information is restored. Since this information is stored in the iCredible File Security, you can restore the github/workflows directory at any time.
+   - **ICREDIBLE_REPOSITORY_RESTORE_TOKEN:** A Personal Access Token (PAT) with repo and workflow permissions.
+    - **Usage:** Used only during the restore operation to also recover workflow files.
+
+### Workflow Files
+> (Required)
+
+   - **For backup:** You can create a file named icredible-git-sec-backup.yml.
+   - **For restore:** You can create a file named icredible-git-sec-restore.yml.
 
 
-### Features
+## Features
 - 🔒 AES-256-CBC encryption with PBKDF2 key derivation
 - ⚡ Zstandard (ZSTD) compression at level 9
 - 🔐 OTP-based authentication for restore operations
@@ -30,27 +36,27 @@ To use this action, you must meet the following requirements.
 
 ---
 
-## ⚙️ Core Technologies
+# ⚙️ Core Technologies
 
-### Encryption & Compression
+## Encryption & Compression
 - **OpenSSL:** Industry-standard encryption using AES-256-CBC cipher with PBKDF2 key derivation.
 - **Zstandard:** Real-time compression algorithm providing high compression ratios at level 9.
 - **Minimum 32-character keys:** Enforced password strength requirements.
 
-### Security Features
+## Security Features
 - **OTP Verification:** Dual authentication method (email or authenticator app).
 - **Secrets Management:** Secure handling of sensitive data through GitHub Secrets.
 - **Encrypted Backups:** All backups are encrypted before transmission and storage.
 
 ---
 
-# ⚠️ IMPORTANT VERSION COMPATIBILITY NOTICE
+# ⚠️ Important Version Compatibility Notice
 
 ## 🔄 Version-Specific Backup & Restore Requirements
 
-**CRITICAL**: You should restore your backup using **the same version** of iCredible Git Security Action that was used to create the backup. 
+**CRITICAL**: To ensure successful restoration of your backups, it is strongly recommended to use the exact same version of iCredible Git Security Action for both backup and restore operations.
 
-### 🔧 Technical Rationale
+## 🔧 Technical Rationale
 
 Different versions may utilize:
 - **Varying encryption algorithms** (AES-256-CBC, ChaCha20, etc.)
@@ -62,6 +68,8 @@ Different versions may utilize:
 ---
 
 # 📦 Setup Guide
+
+## Intro
 
 1. **Store your Activation Code** as a GitHub Secret  
    - Go to **Settings > Secrets > Actions** in your repository  
@@ -124,6 +132,9 @@ on:
       file_version_id:
         description: 'The version id of the file you want to restore.'
         required: true
+      otp_delivery_method:
+        description: "Specifies the delivery method for the OTP required to authorize a restore operation. Valid options are 'MAIL' or 'AUTHENTICATOR'."
+        required: true
 
 jobs:
    restore_from_archive:
@@ -140,28 +151,30 @@ jobs:
             icredible_activation_code: ${{ secrets.ICREDIBLE_ACTIVATION_CODE }}
             icredible_encryption_password: ${{ secrets.ICREDIBLE_ENCRYPTION_PASSWORD }}
             file_version_id: ${{ github.event.inputs.FILE_VERSION_ID }}
+            otp_delivery_method: ${{ github.event.inputs.OTP_DELIVERY_METHOD }}
             suspend_actions: 'true'
             action: 'restore'
-```
-# 🔑 Personal Access Token (PAT) Setup Guide for Repository Restoration
 
-## Step 1: Create a Personal Access Token
+```
+# 🔑 Personal Access Token (PAT) Setup Guide for Repository Restore
+
+## Create a Personal Access Token
 1. Log in to your GitHub account
 2. Click on your profile picture in the top-right corner
 3. Navigate to: Settings → Developer Settings → Personal Access Tokens → Tokens (classic)
 4. Click `Generate new token` then `Generate new token (classic)`
 
-## Step 2: Configure Token Permissions
+## Configure Token Permissions
 Set these required permissions:
 ```yml
 Note: "iCredible-Git-Security-Restore-Token"  # Example name
 Expiration: 30 days                           # Recommended duration
 Permissions:
 - repo       # Select ALL repository permissions
-- workflow   # Required for workflow restoration
+- workflow   # Required for workflow restore
 ```
 
-## Step 3: Add Token to Repository Secrets
+## Add Token to Repository Secrets
 1. In your repository, go to: Settings → Secrets → Actions
 2. Click New repository secret`
 3. Enter details:
@@ -170,7 +183,7 @@ Permissions:
 Name: ICREDIBLE_REPOSITORY_RESTORE_TOKEN  # This will be used in workflow
 Secret: [Paste your generated token here]
 ```
-## Step 4: Configure Workflow File
+## Configure Workflow File
 
 Add this to your restore workflow (.github/workflows/icredible-git-sec-restore.yml):
 
@@ -178,19 +191,20 @@ Add this to your restore workflow (.github/workflows/icredible-git-sec-restore.y
 icredible_repository_restore_token: ${{ secrets.ICREDIBLE_REPOSITORY_RESTORE_TOKEN }} 
 ```
 
-# ⚙️ Optional: Suspend Workflows During Restore
+# ⚙️ Suspend Workflows During Restore
+> Optional
 
 To ensure that the restore process runs without any interference from other automated workflows in your repository, this action includes a safety feature to temporarily suspend all GitHub Actions.
 
 This is highly recommended for repositories with active CI/CD pipelines or other automations.
 
-# # How It Works
-  - Before Restore: The action saves your repository's current workflow settings.
-  - Suspend: It then temporarily disables GitHub Actions for the entire repository.
-  - After Restore: Once the restore is complete (or if it fails), the action automatically restores the original workflow settings, re-enabling them.
+## How It Works
+  - **Before Restore:** The action saves your repository's current workflow settings.
+  - **Suspend:** It then temporarily disables GitHub Actions for the entire repository.
+  - **After Restore:** Once the restore is complete (or if it fails), the action automatically restores the original workflow settings, re-enabling them.
 
-# # Configuration
+## Configuration
 
 You can control this feature using the suspend_actions input in your restore workflow file.
-  - suspend_actions: 'true' (Default): Activates the safety feature. Workflows will be suspend during the operation.
-  - suspend_actions: 'false': Deactivates the feature. Workflows will remain active, which is not recommended unless you are sure no other actions will interfere.
+  - **suspend_actions: 'true' (Default):** Activates the safety feature. Workflows will be suspend during the operation.
+  - **suspend_actions: 'false':** Deactivates the feature. Workflows will remain active, which is not recommended unless you are sure no other actions will interfere.
