@@ -4,8 +4,8 @@ TAR_ARCHIVE_FILE="${SOURCE_ARCHIVE_DIR}.tar"
 COMPRESSED_ARCHIVE_FILE="${TAR_ARCHIVE_FILE}.zst"
 ENC_ARCHIVE_FILE="${COMPRESSED_ARCHIVE_FILE}.enc"
 
-echo "API_BASE_URL=https://dev.api.file-security.icredible.com" >> $GITHUB_ENV
-echo "MGMT_BASE_URL=https://dev.management.file-security.icredible.com" >> $GITHUB_ENV
+echo "API_BASE_URL=https://staging.api.file-security.icredible.com" >> $GITHUB_ENV
+echo "MGMT_BASE_URL=https://staging.management.file-security.icredible.com" >> $GITHUB_ENV
 echo "ZSTD_COMPRESSION_LEVEL=10" >> $GITHUB_ENV
 echo "SOURCE_ARCHIVE_DIR=${SOURCE_ARCHIVE_DIR}" >> $GITHUB_ENV
 echo "TAR_ARCHIVE_FILE=${TAR_ARCHIVE_FILE}" >> $GITHUB_ENV
