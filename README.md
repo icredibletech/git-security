@@ -90,6 +90,8 @@ Create a file at `.github/workflows/icredible-git-sec-backup.yml` and paste in t
 
 ```yaml
 name: "iCredible Repository Backup Process"
+permissions:
+  contents: read 
 
 on:
   push:
@@ -108,6 +110,7 @@ jobs:
          with:
             icredible_activation_code: ${{ secrets.ICREDIBLE_ACTIVATION_CODE }}
             icredible_encryption_password: ${{ secrets.ICREDIBLE_ENCRYPTION_PASSWORD }}
+            github-token: ${{ secrets.GITHUB_TOKEN }}
             action: 'backup'
 ```
 ---
@@ -121,8 +124,9 @@ Create a file at `.github/workflows/icredible-git-sec-restore.yml` and paste in 
 
 ```yaml
 name: "iCredible Repository Restore Process"
-permissions: write-all
-
+permissions:
+  contents: write
+   
 on:
   workflow_dispatch:
     inputs:
@@ -149,6 +153,7 @@ jobs:
             icredible_encryption_password: ${{ secrets.ICREDIBLE_ENCRYPTION_PASSWORD }}
             file_version_id: ${{ github.event.inputs.FILE_VERSION_ID }}
             otp_delivery_method: ${{ github.event.inputs.OTP_DELIVERY_METHOD }}
+            github-token: ${{ secrets.GITHUB_TOKEN }}
             suspend_actions: 'true'
             action: 'restore'
 ```

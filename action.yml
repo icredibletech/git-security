@@ -16,6 +16,9 @@ inputs:
     description: 'Select operation type (backup or restore)'
     required: false
     default: 'backup'
+  github-token:  
+    description: 'GITHUB_TOKEN to be used for identity verification.'
+    required: true 
   file_version_id:
     description: 'The unique identifier of the backup version you wish to restore. Providing a value for this input triggers the restore workflow. Leave this empty to perform a backup.'
     required: false
@@ -33,147 +36,22 @@ inputs:
     required: false
     default: 'MAIL'
 
+outputs:
+  record_id:
+    description: 'The unique record ID of the backup (backup operation only)'
+  directory_record_id:
+    description: 'The directory record ID of the backup (backup operation only)'
+  file_size:
+    description: 'Original file size in bytes (backup operation only)'
+  compressed_size:
+    description: 'Compressed file size in bytes (backup operation only)'
+  encrypted_size:
+    description: 'Encrypted file size in bytes (backup operation only)'
+  file_version_id:
+    description: 'The file version ID that was restored (restore operation only)'
+  workflows_suspended:
+    description: 'Whether GitHub Actions were suspended during restore (restore operation only)'
+
 runs:
-  using: 'composite'
-  steps:
-
-# region Common Setup Steps
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        ref: ${{ github.ref }}
-
-    - name: Set Script Execution Permissions
-      shell: bash
-      run: chmod -R +x ${{ github.action_path }}/scripts
-
-    - name: Validate Action Parameters
-      shell: bash
-      run: ${{ github.action_path }}/scripts/common/validate_inputs.sh
-      env:
-        ICREDIBLE_ACTIVATION_CODE: ${{ inputs.icredible_activation_code }}
-        ICREDIBLE_ENCRYPTION_PASSWORD: ${{ inputs.icredible_encryption_password }}
-        FILE_VERSION_ID: ${{ inputs.file_version_id }}
-        OTP_DELIVERY_METHOD: ${{ inputs.otp_delivery_method }}
-        SUSPEND_ACTIONS: ${{ inputs.suspend_actions }}
-        ACTION: ${{ inputs.action }}
-
-
-    - name: Initialize Environment Variables
-      shell: bash
-      run: ${{ github.action_path }}/scripts/common/set_globals.sh
-      env:
-        OWNER_TYPE: ${{ github.event.repository.owner.type }}
-
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        ref: ${{ github.ref }}
-# endregion
-# region Backup Steps
-    - name: Create mirror clone
-      if: ${{ inputs.action == 'backup' }}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/backup/mirror_clone.sh
-
-    - name: Install System Dependencies
-      if: ${{ inputs.action == 'backup' }}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/backup/install_deps.sh
-
-    - name: Compress Repository Data
-      if: ${{ inputs.action == 'backup' }}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/backup/compress_repo.sh
-
-    - name: Encrypt Backup Archive
-      if: ${{ inputs.action == 'backup' }}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/backup/encrypt_repo.sh
-      env:
-        ICREDIBLE_ENCRYPTION_PASSWORD: ${{ inputs.icredible_encryption_password }}
-
-    - name: Retrieve Activation Token
-      shell: bash
-      run: ${{ github.action_path }}/scripts/common/get_token.sh
-      env:
-        ICREDIBLE_ACTIVATION_CODE: ${{ inputs.icredible_activation_code }}
-        RUNNER_OS: ${{ runner.os }}
-
-    - name: Transfer Backup Archive
-      if: ${{ inputs.file_version_id == '' }}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/backup/upload_backup.sh
-
-    - name: Display Backup Report
-      if: ${{ inputs.action == 'backup' }}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/backup/print_summary.sh
-# endregion
-# region Restore Steps
-    - name: Request OTP
-      if: ${{ inputs.action == 'restore' }}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/restore/request_otp.sh
-      env:
-        OTP_DELIVERY_METHOD: ${{ inputs.otp_delivery_method }}
-
-    - name: Authenticate OTP Code
-      if: ${{ inputs.action == 'restore' }}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/restore/verify_otp.sh
-
-    - name: Fetch Backup Archive
-      if: ${{ inputs.action == 'restore' }}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/restore/retrieve_backup.sh
-      env:
-        FILE_VERSION_ID: ${{ inputs.file_version_id }}
-
-    - name: Decrypt Backup Archive
-      if: ${{ inputs.action == 'restore' }}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/restore/decrypt_backup.sh
-      env:
-        ICREDIBLE_ENCRYPTION_PASSWORD: ${{ inputs.icredible_encryption_password }}
-
-    - name: Restore Repository Data
-      if: ${{ inputs.action == 'restore' }}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/restore/extract_backup.sh
-
-    - name: Prepare Backup File for Default Token
-      if: ${{ inputs.action == 'restore' && inputs.icredible_repository_restore_token == ''}}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/restore/filter_workflows.sh
-
-    - name: Prepare Backup File for PAT Token
-      if: ${{ inputs.action == 'restore' && inputs.icredible_repository_restore_token != ''}}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/restore/sync_remote_branches.sh
-
-    - name: Suspend Repository Operations for Safe Restore
-      if: ${{ inputs.action == 'restore' && inputs.suspend_actions=='true' }}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/restore/suspend_actions.sh
-      env:
-        GH_TOKEN: ${{ inputs.icredible_repository_restore_token }}
-
-    - name: Configure Git and Push
-      if: ${{ inputs.action == 'restore' }}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/restore/configure_push.sh
-      env:
-        ICREDIBLE_REPOSITORY_RESTORE_TOKEN: ${{ inputs.icredible_repository_restore_token }}
-        GITHUB_DEFAULT_TOKEN: ${{ github.token }}
-
-    - name: Restore Repository Operations After Completion
-      if: ${{ always() && inputs.action == 'restore' && inputs.suspend_actions=='true' }}
-      shell: bash
-      run: ${{ github.action_path }}/scripts/restore/resume_actions.sh
-      env:
-        GH_TOKEN: ${{ inputs.icredible_repository_restore_token }}
-
-# endregion
+  using: 'node20'
+  main: 'dist/index.js'
